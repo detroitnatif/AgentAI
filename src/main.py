@@ -1,57 +1,38 @@
-from textwrap import dedent
-from crewai import Task
+from dotenv import load_dotenv
+from crewai import Crew
+from tasks import MeetingPrepTasks
+from agents import MeetingPrepAgent
 
-class MeetingPrepTasks():
-    def research_task(self, agent, meeting_participants, meeting_context):
-        return Task(
-            description=dedent(f'''\
-            Conduct comprehensive research on all the meeting participants and companies involved
-            including personal achievements, proffesional background, and any relevant business activities.
-            participants: {meeting_participants}
-            meeting context: {meeting_context}'''),
-            expected_output=dedent(f'''\
-            A detailed report summarizing key findings of each participant and company, highlighting information'''),
-            agent=agent,
-            async_execution=True
-)
-    
-    def industry_analysis_task(self, agent, meeting_participants, meeting_context):
-        return Task(
-            description=dedent(f'''\
-            Analyze the market in question and do comprehensive research on all companies involved
-            by using market reports, recent developments, and expert opinions
-            participants: {meeting_participants}
-            meeting context: {meeting_context}'''),
-            expected_output=dedent(f'''\
-            A detailed report summarizing key findings from market research that identifies
-            major trends, potenital challenges, and strategic oppurtunites'''),
-            agent=agent,
-            async_execution=True,
-)
-    
-    def meeting_strategy(self, agent, meeting_participants, meeting_context):
-        return Task(
-            description=dedent(f'''\
-            Create a schedule of talking points for this upcoming meeting as well as questions
-            to ask and discussion angles based on the analysis conducted.
-            participants: {meeting_participants}
-            meeting context: {meeting_context}'''),
-            expected_output=dedent(f'''\
-            Create a detailed report of talking points, questions, and discussion angles 
-            based on the analysis conducted.'''),
-            agent=agent,
-)
-    def summarize_meeting(self, agent, meeting_participants, meeting_context):
-        return Task(
-            description=dedent(f'''\
-            Write a summary of all the things that need to be covered in this meeting in 
-            a well structured document that is easy to digest and equips the participants
-            with neccassary information and strategies.
-            participants: {meeting_participants}
-            meeting context: {meeting_context}'''),
-            expected_output=dedent(f'''\
-            Create a detailed report of talking points, questions, and discussion angles 
-            based on the analysis conducted.'''),
-            agent=agent,
-)
 
+def main():
+    load_dotenv()
+    print("Welcome to the Crew")
+    print('---------------------')
+    meeting_participants = input("who is attending the meeting?")
+    meeting_context = input("what is the context of this meeting?")
+    meeting_objective = input('What is your objective for this meeting?')
+
+    tasks = MeetingPrepTasks()
+    agents = MeetingPrepAgent()
+
+    research_agent = agents.research_agent()
+    industry_analysis_agent = agents.industry_analysis_agent()
+    meeting_strategy_agent = agents.meeting_strategy_agent()
+    summarize_agent = agents.summarize()
+
+    research_task = tasks.research_task(research_agent, meeting_participants, meeting_context)
+    industry_analysis_task = tasks.industry_analysis_task(industry_analysis_agent, meeting_participants, meeting_context)
+    meeting_strategy_task = tasks.meeting_strategy(meeting_strategy_agent, meeting_participants, meeting_objective)
+    summarize_meeting_task = tasks.summarize_meeting(summarize_agent, meeting_participants, meeting_objective)
+
+    meeting_strategy_task.context = [research_task, industry_analysis_task]
+    summarize_meeting_task.context = [research_task, industry_analysis_task, meeting_strategy_task]
+
+    crew = Crew(
+        agents=[research_agent, industry_analysis_agent, meeting_strategy_agent, summarize_agent],
+        tasks= [research_task, industry_analysis_task, meeting_strategy_task, summarize_meeting_task]
+    )
+    result = crew.kickoff()
+
+if __name__ == '__main__':
+    main()
