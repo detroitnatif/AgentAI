@@ -44,7 +44,7 @@ class MeetingPrepTasks():
     def summarize_meeting(self, agent, meeting_participants, meeting_context):
         return Task(
             description=dedent(f'''\
-            Write a direct summary of all the things that need to be covered in this meeting in 
+            Write a summary of all the things that need to be covered in this meeting in 
             a well structured document that is easy to digest and equips the participants
             with neccassary information and strategies.
             participants: {meeting_participants}
