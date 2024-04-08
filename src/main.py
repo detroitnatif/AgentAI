@@ -8,7 +8,11 @@ def main():
     load_dotenv()
     print("Welcome to the Crew")
     print('---------------------')
-    meeting_participants = input("who is attending the meeting?")
+    # meeting_participants = input("who is attending the meeting?")
+    # meeting_context = input("what is the context of this meeting?")
+    # meeting_objective = input('What is your objective for this meeting?')
+
+    meeting_participants = 'Ted Sarandos'
     meeting_context = input("what is the context of this meeting?")
     meeting_objective = input('What is your objective for this meeting?')
 
@@ -33,6 +37,6 @@ def main():
         tasks= [research_task, industry_analysis_task, meeting_strategy_task, summarize_meeting_task]
     )
     result = crew.kickoff()
-
+    print(result)
 if __name__ == '__main__':
     main()

@@ -2,6 +2,7 @@ import os
 from exa_py import Exa
 from langchain.agents import tool
 
+
 class ExaSearchToolset():
     @tool
     def search(query: str):
